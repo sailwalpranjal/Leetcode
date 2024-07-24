@@ -1,12 +1,19 @@
 class Solution {
     public int[] sortJumbled(int[] mapping, int[] nums) {
-        Integer[] boxedNums = Arrays.stream(nums).boxed().toArray(Integer[]::new);
-        Arrays.sort(boxedNums, (a, b) -> {
-            long mappedA = mapNumber(a, mapping);
-            long mappedB = mapNumber(b, mapping);
-            return Long.compare(mappedA, mappedB);
+        Integer[] indices = new Integer[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            indices[i] = i;
+        }
+        Arrays.sort(indices, (i1, i2) -> {
+            long mappedI1 = mapNumber(nums[i1], mapping);
+            long mappedI2 = mapNumber(nums[i2], mapping);
+            return Long.compare(mappedI1, mappedI2);
         });
-        return Arrays.stream(boxedNums).mapToInt(Integer::intValue).toArray();
+        int[] result = new int[nums.length];
+        for (int i = 0; i < indices.length; i++) {
+            result[i] = nums[indices[i]];
+        }
+        return result;
     }
     private long mapNumber(int num, int[] mapping) {
         StringBuilder mapped = new StringBuilder();
