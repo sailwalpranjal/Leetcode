@@ -1,38 +1,72 @@
-
 class Solution {
     public int[] sortJumbled(int[] mapping, int[] nums) {
-        Integer[] indices = new Integer[nums.length];
-        for (int i = 0; i < nums.length; i++) {
-            indices[i] = i;
-        }
+     
+     // this problem can be solved using the concept of Radix Sort;
 
-        Arrays.sort(indices, (i1, i2) -> {
-            long mappedI1 = getMappedValue(nums[i1], mapping);
-            long mappedI2 = getMappedValue(nums[i2], mapping);
-            return Long.compare(mappedI1, mappedI2);
-        });
+    int max = -1 ;
+   
+     for(int x : nums)
+     {
+        if(x > max) max = x ;
+     }  
 
-        int[] result = new int[nums.length];
-        for (int i = 0; i < indices.length; i++) {
-            result[i] = nums[indices[i]];
-        }
+      int [] ans = nums;
 
-        return result;
+     for(int place = 1 ; max/place > 0 ; place *= 10 )   
+     {
+       
+     ans = CountSort( ans, place , mapping);
+       
+     }
+    
+    return ans;
     }
 
-    private long getMappedValue(int num, int[] mapping) {
-        if (num == 0) return mapping[0];
+
+static int[] CountSort(int [] arr , int place, int[] mapping)
+{
+    int n = arr.length;
+
+    if( n <= 1 )return arr;
+
+    int[] ans = new int[n];
+
+    int[] freqArr = new int[10];
+
+    for(int x : arr)                   // making frequency array;
+    {    
+        if(x/place != 0 || x==0)
+        { int val = (x/place) % 10 ;
         
-        long mappedValue = 0;
-        long multiplier = 1;
-        
-        while (num > 0) {
-            int digit = num % 10;
-            mappedValue = mapping[digit] * multiplier + mappedValue;
-            multiplier *= 10;
-            num /= 10;
+          freqArr[ mapping[val] ]++;        }
+        else
+        {
+          freqArr[ 0 ]++;        
         }
-        
-        return mappedValue;
     }
-}
+
+
+    for(int i = 1 ; i<10 ; i++)       // converting frequency array into prefix sum array;
+    {
+        freqArr[i] += freqArr[i-1];
+    }
+
+    for(int i = n - 1 ; i >= 0 ; i--)
+    {
+        if( arr[i]/place != 0 || arr[i]== 0)
+        {
+        int val = ( arr[i]/place )%10;
+
+         ans[ freqArr[mapping[val]] - 1 ] = arr[i] ;
+         
+          freqArr[mapping[val]]--;
+        }
+        else
+        {
+            ans[ freqArr[0] - 1] = arr[i];
+            freqArr[0]--;
+        }
+    }
+
+return ans;
+}}
