@@ -1,19 +1,26 @@
-class Solution {
+public class Solution {
     public int minHeightShelves(int[][] books, int shelfWidth) {
         int n = books.length;
-        int[] f = new int[n + 1];
-        for (int i = 1; i <= n; ++i) {
-            int w = books[i - 1][0], h = books[i - 1][1];
-            f[i] = f[i - 1] + h;
-            for (int j = i - 1; j > 0; --j) {
-                w += books[j - 1][0];
-                if (w > shelfWidth) {
-                    break;
+        // Initialize the dp array where dp[i] represents the minimum height needed for the first i books
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0; // Base case: no books means height is 0
+
+        // Iterate over each book
+        for (int i = 1; i <= n; i++) {
+            int width = 0;
+            int maxHeight = 0;
+            // Try placing books from the end of the current shelf to the start
+            for (int j = i; j > 0; j--) {
+                width += books[j - 1][0]; // thickness of the current book
+                if (width > shelfWidth) {
+                    break; // Stop if the total width exceeds shelfWidth
                 }
-                h = Math.max(h, books[j - 1][1]);
-                f[i] = Math.min(f[i], f[j - 1] + h);
+                maxHeight = Math.max(maxHeight, books[j - 1][1]); // max height on the shelf
+                dp[i] = Math.min(dp[i], dp[j - 1] + maxHeight);
             }
         }
-        return f[n];
+
+        return dp[n]; // Minimum height needed for all books
     }
 }
